@@ -1,0 +1,35 @@
+If @object_type ='202' and @transaction_type IN ('A','U')
+Begin
+    DECLARE @TranType AS VARCHAR(2)
+	SET @TranType=(SELECT U_TransType FROM OWOR T0 
+				   WHERE T0.DocEntry = @list_of_cols_val_tab_del)
+	IF @TranType IS NULL OR @TranType='-'
+	BEGIN
+		SET @error=-20201
+		SET @error_message =N'Transaction type is mandatory'
+	END
+
+	--Chemical Slurry
+	IF(@TranType ='CS')
+	BEGIN
+      IF EXISTS(SELECT 1 FROM OWOR T0 
+				WHERE T0.DocEntry = @list_of_cols_val_tab_del AND ( U_Boiler IS NULL OR U_Boiler =''))
+				BEGIN
+					SET @error=-20201	
+					SET @error_message =N'Boiler is mandatory'
+				END
+	END
+
+	--Chemical Coating
+
+	ELSE IF(@TranType ='CC')
+	BEGIN
+      IF EXISTS(SELECT 1 FROM OWOR T0 
+				WHERE T0.DocEntry = @list_of_cols_val_tab_del AND ( U_Coater IS NULL OR U_Coater =''))
+				BEGIN
+					SET @error=-20202	
+					SET @error_message =N'Coater is mandatory'
+				END
+	END
+
+END

@@ -1,0 +1,18 @@
+ 
+ALTER PROC [dbo].[crystal_GRPOPrintBarCode]
+@DocKey Varchar(20)
+AS
+IF OBJECT_ID('TEMPDB..#TEMP') IS NOT NULL DROP TABLE #TEMP
+
+SELECT T2.DistNumber,
+ T1.ItemCode,T3.ItemName,T0.Quantity ,T2.MnfSerial,T2.DistNumber [Barcode],T2.InDate,T3.InvntryUom
+ FROM    ITL1 T0
+INNER JOIN	OITL T1 ON T0.LogEntry = T1.LogEntry
+INNER JOIN	OBTN T2 ON T0.ItemCode = T2.ItemCode and T0.SysNumber = T2.SysNumber
+INNER JOIN	OITM T3 ON T0.ItemCode = T3.ItemCode 
+WHERE T1.ApplyEntry = @DocKey
+AND T1.ApplyType = '20'
+-- SELECT * 
+--FROM #TEMP r
+--CROSS APPLY dbo.NumbersTable(1,r.NoofPackages,1) --n
+--ORDER BY r.U_ItemCode
